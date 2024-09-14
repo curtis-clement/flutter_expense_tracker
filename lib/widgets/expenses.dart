@@ -4,7 +4,7 @@ import 'package:expense_tracker_app/widgets/expenses_list/expenses_list.dart';
 import 'package:expense_tracker_app/models/expense.model.dart';
 
 class Expenses extends StatefulWidget {
-  const Expenses({ super.key });
+  const Expenses({super.key});
 
   @override
   State<Expenses> createState() {
@@ -14,16 +14,35 @@ class Expenses extends StatefulWidget {
 
 class _ExpensesState extends State<Expenses> {
   final List<Expense> _expenses = [
-    Expense(title: 'Food 1', amount: 14.99, date: DateTime.now(), category: Category.food),
-    Expense(title: 'Food 2', amount: 19.99, date: DateTime.now(), category: Category.food),
-    Expense(title: 'Travel 1', amount: 99.99, date: DateTime.now(), category: Category.travel),
-    Expense(title: 'Leisure 1', amount: 49.99, date: DateTime.now(), category: Category.leisure),
+    Expense(
+        title: 'Food 1',
+        amount: 14.99,
+        date: DateTime.now(),
+        category: Category.food),
+    Expense(
+        title: 'Food 2',
+        amount: 19.99,
+        date: DateTime.now(),
+        category: Category.food),
+    Expense(
+        title: 'Travel 1',
+        amount: 99.99,
+        date: DateTime.now(),
+        category: Category.travel),
+    Expense(
+        title: 'Leisure 1',
+        amount: 49.99,
+        date: DateTime.now(),
+        category: Category.leisure),
   ];
 
   _openAddExpenseOverlay() {
-    showModalBottomSheet(isScrollControlled: true, context: context, builder: (ctx) {
-      return AddExpense(onAddExpense: _addExpense);
-    });
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (ctx) {
+          return AddExpense(onAddExpense: _addExpense);
+        });
   }
 
   void _addExpense(Expense newExpense) {
@@ -33,13 +52,40 @@ class _ExpensesState extends State<Expenses> {
   }
 
   void _removeExpense(Expense expense) {
+    final expenseIndex = _expenses.indexOf(expense);
+
     setState(() {
       _expenses.remove(expense);
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 3),
+        content: Text('Removed expense: ${expense.title}'),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() {
+              _expenses.insert(expenseIndex, expense);
+            });
+          },
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget bodyContent = const Center(
+      child:
+          Text('You have no current expenses. Add some with the "+" button!'),
+    );
+
+    if (_expenses.isNotEmpty) {
+      bodyContent = ExpensesList(
+        expensesList: _expenses, onRemoveExpense: _removeExpense);
+    }
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -53,7 +99,7 @@ class _ExpensesState extends State<Expenses> {
       body: Column(
         children: [
           Expanded(
-            child: ExpensesList(expensesList: _expenses, onRemoveExpense: _removeExpense),
+            child: bodyContent,
           ),
         ],
       ),
