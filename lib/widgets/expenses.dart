@@ -22,7 +22,13 @@ class _ExpensesState extends State<Expenses> {
 
   _openAddExpenseOverlay() {
     showModalBottomSheet(context: context, builder: (ctx) {
-      return AddExpense();
+      return AddExpense(onAddExpense: _addExpense);
+    });
+  }
+
+  void _addExpense(Expense newExpense) {
+    setState(() {
+      _expenses.add(newExpense);
     });
   }
 
