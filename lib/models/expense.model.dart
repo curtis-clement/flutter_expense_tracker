@@ -32,3 +32,26 @@ class Expense {
   String get formattedDate => formatter.format(date);  
   IconData get icon => categoryIcons[category]!;
 }
+
+class ExpenseGroup {
+  ExpenseGroup({
+    required this.category,
+    required this.expenses,
+  });
+
+  ExpenseGroup.forCategory(List<Expense> allExpenses, this.category)
+    : expenses = allExpenses.where((expense) => expense.category == category).toList();
+
+  final Category category;
+  final List<Expense> expenses;
+
+  double get totalExpenses {
+    double sum = 0;
+
+    for (final expense in expenses) {
+      sum += expense.amount;
+    }
+
+    return sum;
+  }
+}
